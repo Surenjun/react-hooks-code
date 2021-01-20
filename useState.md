@@ -58,15 +58,25 @@
     )
 ```
 
-```
+```text
     useState的3个流程 hook本身是个链表 通过.next往下找 如果用while循环找 就没这个问题
 
     1.mountState 
         const [state,setState] = useState(0)
         if: const [state,setState] = useState(0)
         const [state,setState] = useState(0)
+        
+        默认值是functino，执行function，得到初始的state
+        state是存放在memoizedState
+        新建一个queue
+        将queue传递给dispatch
+        返回默认值和dispatch
 
-    2.dispathAction 
+    2.dispatchAction 
+        创建一个update
+        update添加到quene里
+        空闲的时候：提前计算出新的state，保存在eagerState
+        最后调用一次scheduleUpdateOnFiber，进入schedule，触发function重新执行一次
 
     3.updateState  这个阶段就是通过.next往下找
         const [state,setState] = useState(0)
@@ -76,4 +86,7 @@
           if: const [state,setState] = useState(0)
         worknInprogresssHook.next
         const [state,setState] = useState(0)
+
+        递归执行queue里的update
+        在LayoutEffects里调用commitHookEffectListMount方法
 ```
